@@ -3,7 +3,7 @@ import numpy as np
 
 img1='InputImages/w5.jpeg'
 img2='InputImages/w6.jpeg'
-
+Name_Final = 'OutputImages/Op1WithPre.jpeg'
 downsample_level=1
 clippinglimit=2
 w=360
@@ -93,6 +93,7 @@ cv2.imshow('LPFA',imLPFA)
 cv2.imshow('FA',imFinalA) """
 
 cv2.imshow('Final',finalimg )
+cv2.imwrite(Name_Final,finalimg)
 k = cv2.waitKey(0)
 if k == 27:         # wait for ESC key to exit
     cv2.destroyAllWindows()
