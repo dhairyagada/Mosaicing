@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 
-img1='InputImages/w5.jpeg'
-img2='InputImages/w6.jpeg'
-Name_Final = 'OutputImages/Op1WithPre.jpeg'
+img1='InputImages/7.jpeg'
+img2='InputImages/8.jpeg'
+Name_Final = 'OutputImages/Op4Pre.jpeg'
 downsample_level=1
 clippinglimit=2
 w=360
