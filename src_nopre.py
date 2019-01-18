@@ -8,6 +8,23 @@ Name_Final = 'OutputImages/Op4WithoutPre.jpeg'
 w=360
 h=480
 
+
+# Region of Interest
+
+## Left Image
+x_l     = 160
+xw_l    = 360
+
+y_l     =  0
+yw_l    =  480
+
+## Right Image
+x_r     = 0
+xw_r    = 200
+
+y_r     = 0
+yw_r    = 480
+
 min_limit=0.75
 
 def inp(A,B):
@@ -22,7 +39,7 @@ def Resize_BW(img,w,h):
 
 def SIFT(img):
     sift=cv2.xfeatures2d.SIFT_create()
-    kp,desc = sift.detectAndCompute(img,None)
+    kp,desc = sift.detectAndCompute(img[0:480,0:200],None)
     img_keyp =cv2.drawKeypoints(img,kp,None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     return kp,desc,img_keyp
 
@@ -34,7 +51,8 @@ def Matcher(ima,imb,ima_kp,imb_kp,ima_desc,imb_desc,min_limit):
     for m,n in matches:
         if m.distance < min_limit*n.distance:
             good.append([m])
-
+    cv2.rectangle(ima,(x_l,y_l),(xw_l,yw_l),(0,255,0),2)
+    cv2.rectangle(imb,(x_r,y_r),(xw_r,yw_r),(0,255,0),2)
     match_img = cv2.drawMatchesKnn(ima,ima_kp,imb,imb_kp,good,None,flags=2)
 
     return matches,good,match_img
