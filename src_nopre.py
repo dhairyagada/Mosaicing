@@ -12,7 +12,7 @@ h=480
 # Region of Interest
 
 ## Left Image
-x_l     = 160
+x_l     = 200
 xw_l    = 360
 
 y_l     =  0
@@ -20,7 +20,7 @@ yw_l    =  480
 
 ## Right Image
 x_r     = 0
-xw_r    = 200
+xw_r    = 160
 
 y_r     = 0
 yw_r    = 480
@@ -37,11 +37,19 @@ def Resize_BW(img,w,h):
     img=cv2.resize(img, (w,h))
     return img
 
-def SIFT(img):
+def SIFT(imgl,imgr):
     sift=cv2.xfeatures2d.SIFT_create()
-    kp,desc = sift.detectAndCompute(img[0:480,0:200],None)
-    img_keyp =cv2.drawKeypoints(img,kp,None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-    return kp,desc,img_keyp
+    kpl,descl = sift.detectAndCompute(imgl[0:480,200:360],None)
+    img_keypl =cv2.drawKeypoints(imgl,kpl,None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+    kpr,descr = sift.detectAndCompute(imgr[0:480,0:160],None)
+    img_keypr =cv2.drawKeypoints(imgr,kpr,None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+    print(len(kpl))
+    for i in range(len(kpl)):
+        kpl[i].pt = (kpl[i].pt[0] + 200.0,kpl[i].pt[1])
+    print(kpl[1].pt[0])
+    return kpl,descl,img_keypl,kpr,descr,img_keypr
 
 def Matcher(ima,imb,ima_kp,imb_kp,ima_desc,imb_desc,min_limit):
     bf = cv2.BFMatcher(cv2.NORM_L2)
@@ -61,8 +69,7 @@ def FinalCall(A,B,min_limit):
     imBWA = Resize_BW(A,w,h)
     imBWB = Resize_BW(B,w,h)
     
-    ima_kp,ima_desc,keyp_imgA = SIFT(imBWA)
-    imb_kp,imb_desc,keyp_imgB = SIFT(imBWB)
+    ima_kp,ima_desc,keyp_imgA,imb_kp,imb_desc,keyp_imgB = SIFT(imBWA,imBWB)
 
     matches,good,match_img = Matcher(imBWA,imBWB,ima_kp,imb_kp,ima_desc,imb_desc,min_limit)
 

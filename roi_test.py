@@ -24,7 +24,7 @@ A = Resize_BW(imgA,w,h)
 B = Resize_BW(imgB,w,h)
 
 cv2.rectangle(A,(160,0),(360,480),(0,255,0),3)
-
+cv2.imshow('A',A)
 cv2.imshow('Final',A[0:480,160:360])
 
 k = cv2.waitKey(0)
