@@ -63,13 +63,31 @@ def Matcher(ima,imb,ima_kp,imb_kp,ima_desc,imb_desc,min_limit):
 
     matches = bf.knnMatch(ima_desc, imb_desc, k=2)
     good = []
+    goodT= []
     for m,n in matches:
         if m.distance < min_limit*n.distance:
             good.append([m])
+            goodT.append(m)
 
     match_img = cv2.drawMatchesKnn(ima,ima_kp,imb,imb_kp,good,None,flags=2)
 
-    return matches,good,match_img
+    return matches,good,match_img,goodT
+
+def AlignImages(ima,imb,kp1,kp2,good):
+    points1 = np.zeros((len(good), 2), dtype=np.float32)
+    points2 = np.zeros((len(good), 2), dtype=np.float32)
+
+    points1 = np.float32([ (kp1[m.queryIdx]).pt for m in good ]).reshape(-1,1,2)
+    points2 = np.float32([ (kp2[m.trainIdx]).pt for m in good ]).reshape(-1,1,2)
+
+    # Find homography
+    h, mask = cv2.findHomography(points1, points2, cv2.RANSAC)
+    # matchesMask = mask.ravel().tolist()
+    # Use homography
+    height, width= imb.shape
+    im1Reg = cv2.warpPerspective(ima, h, (width, height))
+
+    return im1Reg, h
 
 def FinalCall(A,B,min_limit):
     imDownA,imHistA,imBWA,imLPFA = prep(A,w,h,clippinglimit,downsample_level,gaussian_ksize)
@@ -78,13 +96,14 @@ def FinalCall(A,B,min_limit):
     ima_kp,ima_desc,keyp_imgA = SIFT(imLPFA)
     imb_kp,imb_desc,keyp_imgB = SIFT(imLPFB)
 
-    matches,good,match_img = Matcher(imBWA,imBWB,ima_kp,imb_kp,ima_desc,imb_desc,min_limit)
+    matches,good,match_img,goodT = Matcher(imBWA,imBWB,ima_kp,imb_kp,ima_desc,imb_desc,min_limit)
 
-    return match_img
+    RegImage, PMat = AlignImages(imBWA,imBWB,ima_kp,imb_kp,goodT)
+    return match_img,RegImage,PMat
 
 imgA,imgB = inp(img1,img2)
 
-finalimg=FinalCall(imgA,imgB,min_limit)
+finalimg,alignedImage,PMatrix=FinalCall(imgA,imgB,min_limit)
 
 """ cv2.imshow('DownA',imDownA)
 cv2.imshow('HistA',imHistA)
@@ -92,8 +111,10 @@ cv2.imshow('BWA',imBWA)
 cv2.imshow('LPFA',imLPFA)
 cv2.imshow('FA',imFinalA) """
 
+print(PMatrix)
 cv2.imshow('Final',finalimg )
 cv2.imwrite(Name_Final,finalimg)
+cv2.imshow('Aligned Image',alignedImage)
 k = cv2.waitKey(0)
 if k == 27:         # wait for ESC key to exit
     cv2.destroyAllWindows()
