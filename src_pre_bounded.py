@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
 
-img1='InputImages/4.JPG'
-img2='InputImages/3.JPG'
+img1='InputImages/7.jpeg'
+img2='InputImages/8.jpeg'
 Name_Final = 'OutputImages/Op2AlignedImg.jpeg'
+StitchedImage = 'OutputImages/Op4Stitched.jpeg'
 downsample_level=1
 clippinglimit=2
 w=360
@@ -92,8 +93,8 @@ def Matcher(ima,imb,ima_kp,imb_kp,ima_desc,imb_desc,min_limit):
         if m.distance < min_limit*n.distance:
             good.append([m])
             goodT.append(m)
-    cv2.rectangle(ima,(x_l,y_l),(xw_l,yw_l),(0,255,0),2)
-    cv2.rectangle(imb,(x_r,y_r),(xw_r,yw_r),(0,255,0),2)
+    #cv2.rectangle(ima,(x_l,y_l),(xw_l,yw_l),(0,255,0),2)
+    #cv2.rectangle(imb,(x_r,y_r),(xw_r,yw_r),(0,255,0),2)
     match_img = cv2.drawMatchesKnn(ima,ima_kp,imb,imb_kp,good,None,flags=2)
 
     return matches,good,match_img,goodT
@@ -107,23 +108,51 @@ def AlignImages(ima,imb,kp1,kp2,good):
 
     # Find homography
     h, mask = cv2.findHomography(points2, points1, cv2.RANSAC)
-    P = [[0,360,360,0],
-        [0,0,480,480],
-        [1,1,1,1]
-        ]
-    Pdash = np.matmul(h,P)
-
-    tr = [[1,0,500],[0,1,150],[0,0,1]]
-    hnew = np.matmul(tr,h)
-    # matchesMask = mask.ravel().tolist()
-    # Use homography
-    height, width= imb.shape
     
-    im1Reg = cv2.warpPerspective(imb, hnew, (2400, 1800))
+    txyz = np.dot(h, np.array([imb.shape[1], imb.shape[0], 1]))
+    txyz = txyz/txyz[-1]
+    dsize = (int(txyz[0])+ima.shape[1], int(txyz[1])+ima.shape[0])
 
+    im1Reg = cv2.warpPerspective(imb, h, dsize)
+    #im1Reg=  cv2.resize(im1Reg, (w,h))
     return im1Reg, h
  
+def mix_match(leftImage, warpedImage):
+    i1y, i1x = leftImage.shape[:2]
+    i2y, i2x = warpedImage.shape[:2]
+    #print leftImage[-1,-1]
 
+    #t = time.time()
+    black_l = np.where(leftImage == np.array([0,0,0]))
+    black_wi = np.where(warpedImage == np.array([0,0,0]))
+    #print time.time() - t
+    #print black_l[-1]
+
+    for i in range(0, i1x):
+        for j in range(0, i1y):
+            try:
+                if(np.array_equal(leftImage[j,i],np.array([0,0,0])) and  np.array_equal(warpedImage[j,i],np.array([0,0,0]))):
+                    # print "BLACK"
+                    # instead of just putting it with black, 
+                    # take average of all nearby values and avg it.
+                    warpedImage[j,i] = [0, 0, 0]
+                else:
+                    if(np.array_equal(warpedImage[j,i],[0,0,0])):
+                        # print "PIXEL"
+                        warpedImage[j,i] = leftImage[j,i]
+                    else:
+                        if not np.array_equal(leftImage[j,i], [0,0,0]):
+                            bw, gw, rw = warpedImage[j,i]
+                            bl,gl,rl = leftImage[j,i]
+                            # b = (bl+bw)/2
+                            # g = (gl+gw)/2
+                            # r = (rl+rw)/2
+                            warpedImage[j, i] = [bl,gl,rl]
+            except:
+                pass
+    # cv2.imshow("waRPED mix", warpedImage)
+    # cv2.waitKey()
+    return warpedImage
 def FinalCall(A,B,min_limit):
     imDownA,imHistA,imBWA,imLPFA = prep(A,w,h,clippinglimit,downsample_level,gaussian_ksize)
     imDownB,imHistB,imBWB,imLPFB = prep(B,w,h,clippinglimit,downsample_level,gaussian_ksize)
@@ -133,13 +162,17 @@ def FinalCall(A,B,min_limit):
     matches,good,match_img,goodT = Matcher(imBWA,imBWB,ima_kp,imb_kp,ima_desc,imb_desc,min_limit)
 
     RegImage, PMat = AlignImages(imBWA,imBWB,ima_kp,imb_kp,goodT)
-    return match_img,RegImage,PMat
+    #final2 = mix_match(imBWA,RegImage)
+    final2 = RegImage.copy()
+    final2[0:imBWA.shape[0], 0:imBWA.shape[1]] = imBWA
+    #final2 =RegImage
+    return match_img,RegImage,PMat,final2
 
 
 
 imgA,imgB = inp(img1,img2)
 
-finalimg,alignedImage,PMatrix=FinalCall(imgA,imgB,min_limit)
+finalimg,alignedImage,PMatrix,final2=FinalCall(imgA,imgB,min_limit)
 
 """ cv2.imshow('DownA',imDownA)
 cv2.imshow('HistA',imHistA)
@@ -148,8 +181,11 @@ cv2.imshow('LPFA',imLPFA)
 cv2.imshow('FA',imFinalA) """
 print(PMatrix)
 cv2.imshow('Final',finalimg )
-cv2.imwrite(Name_Final,alignedImage)
+#cv2.imwrite(Name_Final,alignedImage)
 cv2.imshow('Aligned Image',alignedImage)
+cv2.imshow('Final2',final2)
+cv2.imwrite(StitchedImage,final2)
+#cv2.imshow('temp',temp)
 k = cv2.waitKey(0)
 if k == 27:         # wait for ESC key to exit
     cv2.destroyAllWindows()
