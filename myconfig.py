@@ -1,8 +1,8 @@
 # Configurations
 
 ## Input Images
-img1='InputImages/1.jpeg'
-img2='InputImages/2.jpeg'
+img1='InputImages/S1.jpg'
+img2='InputImages/S2.jpg'
 
 ## Image ReSizing Parameters
 w=360
@@ -10,7 +10,7 @@ h=480
 
 ## Pre-Processing Parameters
 
-ifProc = 0
+ifProc = 1
 
 # Downsampling
 downsample_level=1
