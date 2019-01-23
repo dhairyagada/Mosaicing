@@ -1,14 +1,14 @@
 import cv2
 import numpy as np
 
-img1='InputImages/9.jpeg'
-img2='InputImages/10.jpeg'
-Name_Final = 'OutputImages/Op2WithoutPre.jpeg'
-StitchedImage = 'OutputImages/Op5Stitched.jpeg'
+img1='InputImages/13.jpeg'
+img2='InputImages/14.jpeg'
+Name_Final = 'OutputImages/Op2AlignedImg.jpeg'
+StitchedImage = 'OutputImages/Op7StitchedNopre.jpeg'
 w=360
 h=480
 
-min_limit=0.75
+min_limit=0.6
 
 def inp(A,B):
     img1=cv2.imread(A)

@@ -1,16 +1,16 @@
 import cv2
 import numpy as np
 
-img1='InputImages/7.jpeg'
-img2='InputImages/8.jpeg'
+img1='InputImages/house1.jpeg'
+img2='InputImages/house2.jpeg'
 Name_Final = 'OutputImages/Op2AlignedImg.jpeg'
-StitchedImage = 'OutputImages/Op4Stitched.jpeg'
+StitchedImage = 'OutputImages/OpHouseStitched12.jpeg'
 downsample_level=1
 clippinglimit=2
-w=360
-h=480
+w=480
+h=360
 gaussian_ksize=3
-min_limit=0.75
+min_limit=0.6
 
 # Region of Interest
 
@@ -107,15 +107,15 @@ def AlignImages(ima,imb,kp1,kp2,good):
     points2 = np.float32([ (kp2[m.trainIdx]).pt for m in good ]).reshape(-1,1,2)
 
     # Find homography
-    h, mask = cv2.findHomography(points2, points1, cv2.RANSAC)
+    Hom, mask = cv2.findHomography(points2, points1, cv2.RANSAC)
     
-    txyz = np.dot(h, np.array([imb.shape[1], imb.shape[0], 1]))
+    txyz = np.dot(Hom, np.array([imb.shape[1], imb.shape[0], 1]))
     txyz = txyz/txyz[-1]
     dsize = (int(txyz[0])+ima.shape[1], int(txyz[1])+ima.shape[0])
 
-    im1Reg = cv2.warpPerspective(imb, h, dsize)
+    im1Reg = cv2.warpPerspective(imb, Hom, dsize)
     #im1Reg=  cv2.resize(im1Reg, (w,h))
-    return im1Reg, h
+    return im1Reg, Hom
  
 def mix_match(leftImage, warpedImage):
     i1y, i1x = leftImage.shape[:2]
