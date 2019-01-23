@@ -2,7 +2,7 @@ from myconfig import *
 import cv2
 import numpy as np
 def Downsample(imgT,downlevel,wid,ht):
-    print('Downsampling')
+    
     xrange=range
     G = imgT
     for i in xrange(downlevel):
@@ -11,7 +11,7 @@ def Downsample(imgT,downlevel,wid,ht):
     return G
 
 def Hist_Eq(imgT,climit):
-    print('Equalizing Histogram')
+    
     image_lab = cv2.cvtColor(imgT,cv2.COLOR_BGR2LAB)
     l_channel, a_channel, b_channel = cv2.split(image_lab)
 
@@ -23,13 +23,13 @@ def Hist_Eq(imgT,climit):
     return G
 
 def Resize_BW(imgT,wid,ht):
-    print('Resizing Image')
+    
     G=cv2.cvtColor(imgT, cv2.COLOR_BGR2GRAY)
     G=cv2.resize(G, (wid,ht))
     return G
 
 def GaussianLPF(imgT,k_size):
-    print('Applying Gaussian Filter')
+    
     G=cv2.GaussianBlur(imgT,(k_size,k_size),0)
     return G
 

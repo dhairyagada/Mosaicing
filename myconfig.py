@@ -3,7 +3,7 @@
 ## Input Images
 img1='InputImages/S1.jpg'
 img2='InputImages/S2.jpg'
-
+img3='InputImages/S3.jpg'
 ## Image ReSizing Parameters
 w=360
 h=480
