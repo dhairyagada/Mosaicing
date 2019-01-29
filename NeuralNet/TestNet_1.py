@@ -36,9 +36,9 @@ sess.run(init)
 #print(sess.run([c]))
 #print(sess.run(c,{node1:[3.0,5.0],node2:[4.0,5.0]}))
 
-for i in range(1500):
+for i in range(10):
     sess.run(train,{x:[1,2,3,4],y:[0,-1,-2,-3]})
-
+    print(sess.run(loss,{x:[1,2,3,4],y:[0,-1,-2,-3]}))
 print(sess.run([W,b]))
 print(sess.run(linear_model,{x:[5,10,20]}))
 sess.close()

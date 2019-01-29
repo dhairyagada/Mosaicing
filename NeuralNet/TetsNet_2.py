@@ -13,8 +13,8 @@ Train_y = np.load('RandomDataY.npy')
 print(Train_x.shape)
 print(Train_y.shape)
 
-learning_rate = 0.001
-training_epochs = 500
+learning_rate = tf.placeholder(tf.float32)
+training_epochs = 1000
 
 cost_history = np.empty(shape=[1],dtype=float)
 
@@ -28,7 +28,7 @@ model_path = "/home/dhairya/Desktop/FYP/Mosaicing/NeuralNet/TetsNet_2.py"
 
 n_hidden_1 = 16
 n_hidden_2 = 8
-n_hidden_3 = 4
+#n_hidden_3 = 4
 
 x = tf.placeholder(tf.float32,[None,N_dim])
 w = tf.Variable(tf.zeros([N_dim,n_class]))
@@ -45,24 +45,24 @@ def MultiLayerPerceptron(x,weights,biases):
     layer2 = tf.add(tf.matmul(layer1,weights['h2']),biases['b2'])
     layer2 = tf.nn.tanh(layer2)
 
-    layer3 = tf.add(tf.matmul(layer2,weights['h3']),biases['b3'])
-    layer3 = tf.nn.tanh(layer3)
+    #layer3 = tf.add(tf.matmul(layer2,weights['h3']),biases['b3'])
+    #layer3 = tf.nn.tanh(layer3)
 
-    out_layer =  tf.add(tf.matmul(layer3,weights['out']),biases['out'])
+    out_layer =  tf.add(tf.matmul(layer2,weights['out']),biases['out'])
 
     return out_layer
 
 weights = {
     'h1' : tf.Variable(tf.truncated_normal([N_dim,n_hidden_1])),
     'h2' : tf.Variable(tf.truncated_normal([n_hidden_1,n_hidden_2])),
-    'h3' : tf.Variable(tf.truncated_normal([n_hidden_2,n_hidden_3])),
-    'out': tf.Variable(tf.truncated_normal([n_hidden_3,n_class]))
+    #'h3' : tf.Variable(tf.truncated_normal([n_hidden_2,n_hidden_3])),
+    'out': tf.Variable(tf.truncated_normal([n_hidden_2,n_class]))
 }
 
 biases = {
     'b1' : tf.Variable(tf.truncated_normal([n_hidden_1])),
     'b2' : tf.Variable(tf.truncated_normal([n_hidden_2])),
-    'b3' : tf.Variable(tf.truncated_normal([n_hidden_3])),
+    #'b3' : tf.Variable(tf.truncated_normal([n_hidden_3])),
     'out': tf.Variable(tf.truncated_normal([n_class]))
 }
 
@@ -73,30 +73,33 @@ saver = tf.train.Saver()
 y = MultiLayerPerceptron(x,weights,biases)
 
 
-cost_function = tf.reduce_mean(tf.losses.absolute_difference(y_,y))
+#cost_function = tf.reduce_mean(tf.losses.absolute_difference(y_,y))
+cost_function = tf.reduce_mean(tf.square(y-y_))
 training_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost_function)
-
+tf.losses.mean_pairwise_squared_error
 sess =tf.Session()
 sess.run(init)
 
 mse_history = []
 accuracy_history =[]
-
-for epoch in range(training_epochs):
-    sess.run(training_step,feed_dict={x: Train_x,y_:Train_y})
-    cost = sess.run(cost_function,feed_dict={x: Train_x,y_:Train_y})
-    
-    cost_history = np.append(cost_history,cost)
-    
-    """  pred_y =  sess.run(y,feed_dict={x:Test_x})
-    mse = tf.reduce_mean(tf.square(pred_y-Test_y))
-    mse_ = sess.run(mse)
-    mse_history.append(mse_)  """
-    
-    print('epoch :',epoch,'   cost : ',cost)
-
-print(sess.run(y,feed_dict={x:xT}))
-print(3,2,5)
+for lr in [0.02, 0.1]:
+    for epoch in range(training_epochs):
+        sess.run(training_step,feed_dict={x: Train_x,y_:Train_y,learning_rate:lr})
+        cost = sess.run(cost_function,feed_dict={x: Train_x,y_:Train_y})
+        
+        cost_history = np.append(cost_history,cost)
+        
+        """  pred_y =  sess.run(y,feed_dict={x:Test_x})
+        mse = tf.reduce_mean(tf.square(pred_y-Test_y))
+        mse_ = sess.run(mse)
+        mse_history.append(mse_)  """
+        print('Epoch :[%d%%] \r'%epoch,end="")
+        #print('Cost :[%f%%]\r'%cost,end="")
+print('Cost :',cost)
+xTest = np.load('TestDataX.npy')
+yTest = np.load('TestDataY.npy')
+pp.pprint(sess.run(y,feed_dict={x:xTest}))
+pp.pprint(yTest)
 plt.plot(cost_history,'r')
 plt.show()
 save_path = saver.save(sess,model_path)
