@@ -9,8 +9,8 @@ import tensorflow as tf
 node2 = tf.placeholder(tf.float32)
 c = node1*node2 """
 
-W = tf.Variable([.3],tf.float32)
-b = tf.Variable([-3.0],tf.float32)
+W = tf.Variable([0.0],tf.float32)
+b = tf.Variable([0.0],tf.float32)
 x = tf.placeholder(tf.float32)
 
 linear_model = W*x +b
@@ -18,7 +18,7 @@ linear_model = W*x +b
 y = tf.placeholder(tf.float32)
 squared_deltas = tf.square(linear_model-y)
 loss = tf.reduce_sum(squared_deltas)
-
+#loss = tf.losses.mean_squared_error(y,linear_model)
 optimizer = tf.train.GradientDescentOptimizer(0.01)
 train = optimizer.minimize(loss)
 
@@ -31,7 +31,7 @@ sess = tf.Session()
 sess.run(init)
 
 
-File_Writer = tf.summary.FileWriter('NeuralNet/graph1',sess.graph)
+#File_Writer = tf.summary.FileWriter('NeuralNet/graph1',sess.graph)
 
 #print(sess.run([c]))
 #print(sess.run(c,{node1:[3.0,5.0],node2:[4.0,5.0]}))
@@ -40,5 +40,5 @@ for i in range(1500):
     sess.run(train,{x:[1,2,3,4],y:[0,-1,-2,-3]})
 
 print(sess.run([W,b]))
-print(sess.run(linear_model,{x:[5]}))
+print(sess.run(linear_model,{x:[5,10,20]}))
 sess.close()
