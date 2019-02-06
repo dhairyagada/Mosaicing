@@ -1,12 +1,12 @@
 import numpy as np
 import pprint
-DataSetSize = 1000
+DataSetSize = 10000
 pp = pprint.PrettyPrinter()
 
 Train_x = np.zeros((DataSetSize,24))
 Train_x[:,0:12] = np.random.randint(0,high=100,size=(DataSetSize,12))
 Train_x[:,0:12] = 0.1 * Train_x[:,0:12]
-Train_y = np.random.randint(0,high=10,size=(DataSetSize,4))
+Train_y = np.random.randint(0,high=100,size=(DataSetSize,4))
 for i in range(DataSetSize):
     Train_x[i,12:15]= Train_y[i,0]*Train_x[i,0:3]
     Train_x[i,15:18]= Train_y[i,1]*Train_x[i,3:6]
@@ -15,11 +15,11 @@ for i in range(DataSetSize):
 np.save('RandomDataX.npy',Train_x)
 np.save('RandomDataY.npy',Train_y)
 
-TestDataSize = 2
+TestDataSize = 5
 Test_x = np.zeros((TestDataSize,24))
 Test_x[:,0:12] = np.random.randint(0,high=100,size=(TestDataSize,12))
 Test_x[:,0:12] = 0.1 * Test_x[:,0:12]
-Test_y = np.random.randint(0,high=10,size=(TestDataSize,4))
+Test_y = np.random.randint(0,high=100,size=(TestDataSize,4))
 for i in range(TestDataSize):
     Test_x[i,12:15]= Test_y[i,0]*Test_x[i,0:3]
     Test_x[i,15:18]= Test_y[i,1]*Test_x[i,3:6]
