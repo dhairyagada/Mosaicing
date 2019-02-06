@@ -4,7 +4,10 @@ from myconfig import *
 from PreProcessing import *
 from Matching import *
 from Stitching import *
+import time
 
+start_time = time.time()
+print("Start Time = ",start_time)
 def inputImages(A,B,C):
     imgA = cv2.imread(A)
     imgB = cv2.imread(B)
@@ -40,6 +43,10 @@ P_Matrix3 = np.matmul(P_Matrix1,P_Matrix2)
 WarpedImage3,StitchedImage3 = WarpAndStitch(StitchedImage1,imgCCol,P_Matrix3)
 
 FinalStitch = mix_and_match(StitchedImage1,WarpedImage3)
+
+end_time = time.time()
+#print("End Time = ",end_time)
+print("--- %s seconds ---" % (end_time - start_time))
 
 cv2.imshow("Stitched 1 and 2",  StitchedImage1)
 cv2.imshow("Stitched 2 and 3",  StitchedImage2)

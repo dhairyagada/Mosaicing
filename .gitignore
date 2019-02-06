@@ -102,3 +102,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+NeuralNet/TetsNet_2.py.data-00000-of-00001
+NeuralNet/TetsNet_2.py.index
+NeuralNet/TetsNet_2.py.meta
