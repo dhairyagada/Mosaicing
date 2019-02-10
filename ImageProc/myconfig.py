@@ -1,9 +1,9 @@
 # Configurations
 
 ## Input Images
-img1='InputImages/S1.jpg'
-img2='InputImages/S2.jpg'
-img3='InputImages/S3.jpg'
+img1='./ImageProc/InputImages/home1edit.jpg'
+img2='./ImageProc/InputImages/home2edit.jpg'
+img3='./ImageProc/InputImages/home3.jpg'
 ## Image ReSizing Parameters
 w=360
 h=480
@@ -25,8 +25,8 @@ min_limit=0.6
 
 ## Region of Interest
 
-ROIDisp = 0
-ifROI = 0
+ROIDisp = 1
+ifROI = 1
 # Left Image
 x_l     = 200
 xw_l    = 360
