@@ -5,8 +5,8 @@ img1='./ImageProc/InputImages/home1edit.jpg'
 img2='./ImageProc/InputImages/home2edit.jpg'
 img3='./ImageProc/InputImages/home3.jpg'
 ## Image ReSizing Parameters
-w=720
-h=960
+w= 540
+h= 720
 
 ## Pre-Processing Parameters
 
