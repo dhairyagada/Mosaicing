@@ -3,16 +3,16 @@ import cv2
 import random
 from matplotlib import pyplot as plt
 from numpy.linalg import inv
-from myconfig import *
+from mynetconfig import *
+from glob import glob
+import os
+
 colimg = cv2.imread('./NeuralNet/SampleTestSet/COCO_test2014_000000000014.jpg')
 colimg = cv2.resize(colimg,(w,h))
 img = cv2.cvtColor(colimg,cv2.COLOR_RGB2GRAY)
 
-rho = 32
-patchsize = 128
-
 x = random.randint(rho,x_l-rho-patchsize)
-y = random.randint(rho,h-rho-patchsize-25)
+y = random.randint(rho,h-rho-patchsize-newpointdel)
 cv2.rectangle(colimg,(rho,rho),(x_l-rho-patchsize,h-rho-patchsize),(0,255,255),2)
 
 
@@ -27,8 +27,8 @@ perturbedpoints = []
 for point in points:
     perturbedpoints.append((point[0] + random.randint(-rho, rho), point[1] + random.randint(-rho, rho)))
 
-newx = x + random.randint(1,24)
-newy = y + random.randint(1,24)
+newx = x + random.randint(1,newpointdel)
+newy = y + random.randint(1,newpointdel)
 
 newupleft = (newx,newy)
 newbotleft = (newx,newy+patchsize)
