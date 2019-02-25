@@ -102,8 +102,8 @@ Y_train = Y[0:int(0.9 *datalen)]
 Y_valid = Y[int(0.9 *datalen):]
 train = {'features': X_train, 'labels': Y_train}
 valid = {'features': X_valid, 'labels': Y_valid}
-pickle.dump(train, open("./train.p", "wb"))
-pickle.dump(valid, open("./valid.p", "wb"))
+pickle.dump(train, open("./NeuralNet/train.p", "wb"))
+pickle.dump(valid, open("./NeuralNet/valid.p", "wb"))
 print("Done.")
 
 k =cv2.waitKey(0)

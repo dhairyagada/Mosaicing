@@ -2,7 +2,7 @@
 
 ## Path 
 
-rawpdatapath = "./SampleTestSet/*.jpg"
+rawpdatapath = "./NeuralNet/SampleTestSet/*.jpg"
 
 ## Image ReSizing Parameters
 w= 540
