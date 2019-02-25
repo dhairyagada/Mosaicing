@@ -59,11 +59,14 @@ with open(train_file, mode='rb') as f:
 with open(valid_file, mode='rb') as f:
     valid = pickle.load(f)
 
-model = homography_regression_model()
-model.summary()
 X_train, y_train = train['features'], train['labels']
 X_valid, y_valid = valid['features'], valid['labels']
 print("X_train shape = ", X_train.shape)
 print("y_train shape = ", y_train.shape)
 
+K.clear_session()
+model = homography_regression_model()
+model.load_weights('NetWeights.h5')
 h = model.fit(x=X_train, y=y_train, verbose=1, batch_size=128, nb_epoch=10, validation_split=0.3)
+model.save_weights('NetWeights.h5')
+K.clear_session()

@@ -108,3 +108,4 @@ NeuralNet/TetsNet_2.py.meta
 NeuralNet/my_model_weights.h5
 train.p
 valid.p
+NetWeights.h5
