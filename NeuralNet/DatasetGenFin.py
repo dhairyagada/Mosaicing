@@ -12,8 +12,8 @@ import pickle
 
 loc_list = glob(rawpdatapath)
 
-X = np.zeros((128, 128, 2, datalen))  # images
-Y = np.zeros((4, 2, datalen))
+X = np.zeros((datalen, 128, 128, 2))  # images
+Y = np.zeros((datalen,4, 2))
 
 for i in range(datalen):
     index = randint(0,numrawimages-1)
@@ -81,8 +81,8 @@ for i in range(datalen):
     trainingimage = np.dstack((oggraypatch,warpedgraypatch))
     H_four_points = np.subtract(np.array(perturbedpoints), np.array(newpoints))
 
-    X[:, :, :, i] = trainingimage
-    Y[:, :, i] = H_four_points
+    X[i,:,:,:] = trainingimage
+    Y[i,:, :] = H_four_points
     
     
     """ subplot(2,2,1)

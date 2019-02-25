@@ -12,6 +12,7 @@ from numpy.linalg import inv
 import cv2
 import random
 import numpy as np
+import pickle
 
 def euclidean_distance(y_true, y_pred):
     return K.sqrt(K.maximum(K.sum(K.square(y_pred - y_true), axis=-1, keepdims=True), K.epsilon()))
@@ -45,8 +46,24 @@ def homography_regression_model():
     out = Dense(8, name='loss')(x)
     
     model = Model(inputs=input_img, outputs=[out])
-    plot_model(model, to_file='documentation_images/HomegraphyNet_Regression.png', show_shapes=True)
+    #plot_model(model, to_file='documentation_images/HomegraphyNet_Regression.png', show_shapes=True)
     
     model.compile(optimizer=Adam(lr=0.0015, beta_1=0.9, beta_2=0.999, epsilon=1e-08), loss=euclidean_distance)
     return model
 
+train_file = 'train.p'
+valid_file = 'valid.p'
+
+with open(train_file, mode='rb') as f:
+    train = pickle.load(f)
+with open(valid_file, mode='rb') as f:
+    valid = pickle.load(f)
+
+model = homography_regression_model()
+model.summary()
+X_train, y_train = train['features'], train['labels']
+X_valid, y_valid = valid['features'], valid['labels']
+print("X_train shape = ", X_train.shape)
+print("y_train shape = ", y_train.shape)
+
+h = model.fit(x=X_train, y=y_train, verbose=1, batch_size=128, nb_epoch=10, validation_split=0.3)
