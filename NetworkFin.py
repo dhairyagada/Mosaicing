@@ -14,6 +14,15 @@ import random
 import numpy as np
 import pickle
 
+from GetTest import *
+from mynetconfig import *
+from Stitching import *
+
+def inputImages(A,B):
+    imgA = cv2.imread(A)
+    imgB = cv2.imread(B)
+    return imgA,imgB
+
 def euclidean_distance(y_true, y_pred):
     return K.sqrt(K.maximum(K.sum(K.square(y_pred - y_true), axis=-1, keepdims=True), K.epsilon()))
 
@@ -51,26 +60,68 @@ def homography_regression_model():
     model.compile(optimizer=Adam(lr=0.0015, beta_1=0.9, beta_2=0.999, epsilon=1e-08), loss=euclidean_distance)
     return model
 
-train_file = 'train.p'
-valid_file = 'valid.p'
+def train_network():
+    train_file = 'train.p'
+    valid_file = 'valid.p'
 
-with open(train_file, mode='rb') as f:
-    train = pickle.load(f)
-with open(valid_file, mode='rb') as f:
-    valid = pickle.load(f)
+    with open(train_file, mode='rb') as f:
+        train = pickle.load(f)
+    with open(valid_file, mode='rb') as f:
+        valid = pickle.load(f)
 
-X_train, y_train = train['features'], train['labels']
-X_valid, y_valid = valid['features'], valid['labels']
-print("X_train shape = ", X_train.shape)
-print("y_train shape = ", y_train.shape)
+    X_train, y_train = train['features'], train['labels']
+    X_valid, y_valid = valid['features'], valid['labels']
+    print("X_train shape = ", X_train.shape)
+    print("y_train shape = ", y_train.shape)
 
-K.clear_session()
-model = homography_regression_model()
-model.load_weights('NetWeights.h5')
-h = model.fit(x=X_train, y=y_train, verbose=1, batch_size=10, nb_epoch=1, validation_split=0.3)
-model.save_weights('NetWeights.h5')
-K.clear_session()
-model = homography_regression_model()
-model.load_weights('NetWeights.h5')
-y_test=model.predict(X_valid)
-print('Done')
+    K.clear_session()
+    model = homography_regression_model()
+    model.load_weights('NetWeights.h5')
+    h = model.fit(x=X_train, y=y_train, verbose=1, batch_size=10, nb_epoch=1, validation_split=0.3)
+    model.save_weights('NetWeights.h5')
+    K.clear_session()
+    model = homography_regression_model()
+    model.load_weights('NetWeights.h5')
+    y_test=model.predict(X_valid)
+    print('Training Done , Weights Saved to NetWeights.h5')
+    return
+
+
+def HPrediction():
+    print("Input Test Started")
+    pathA = './ImageProc/InputImages/test1.jpg'
+    pathB = './ImageProc/InputImages/test2.jpg'
+
+    inputPatches,points = GetInputPatches(pathA,pathB)
+    print(inputPatches.shape)
+
+    model = homography_regression_model()
+    model.load_weights('NetWeights.h5')
+    y_predicted=model.predict(inputPatches)
+
+    K.clear_session()
+    ypred = np.float32(y_predicted.reshape((4,2)))
+
+    perturbed_four = np.float32(np.subtract(points,ypred))
+    fourpoints = np.float32(points)
+    #print(fourpoints)
+    #print(perturbed_four)
+    Hdash = cv2.getPerspectiveTransform(fourpoints,perturbed_four)
+    print('H =',Hdash)
+
+    imgA,imgB = inputImages(pathA,pathB)
+
+    imgACol = cv2.resize(imgA,(w,h))
+    imgBcol = cv2.resize(imgB,(w,h))
+
+    warpedimg,finalimg = WarpAndStitch(imgACol,imgBcol,Hdash)
+    finimg = mix_and_match(imgACol,warpedimg)
+    cv2.imshow("Warped2",warpedimg)
+    cv2.imshow("Final",finimg)
+    k = cv2.waitKey(0)
+    if k == 27:         # wait for ESC key to exit
+        cv2.destroyAllWindows()
+
+    return
+
+HPrediction()

@@ -18,3 +18,6 @@ newpointdel = 25
 datalen = 100            ## Number of iterations
 
 numrawimages = 10       ## Number of Images in Raw Data Set
+
+topbottomcrop = 36
+sidecrop = 180
