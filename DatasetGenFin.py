@@ -9,6 +9,11 @@ import os
 from pylab import *
 import pickle
 
+def show(im):
+    plt.plot()
+    plt.imshow(im)
+    plt.show()
+    return
 
 loc_list = glob(rawpdatapath)
 
