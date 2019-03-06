@@ -28,137 +28,105 @@ for i in range(datalen):
         colimgloc = loc_list[index]
         colimg = cv2.imread(colimgloc)
         print(colimg.shape[0:2])
-        if(colimg.shape[1] > 1.5*colimg.shape[0]-1):  
+        if(1.9*colimg.shape[0]>colimg.shape[1] & colimg.shape[1] > 1.5*colimg.shape[0]-1 ):  
             break  
     
     
     img = cv2.cvtColor(colimg,cv2.COLOR_RGB2GRAY)
     deloverlap = randint(0,lapdisp)
 
-    leftpatch = img[0:colimg.shape[0],0:colimg.shape[0]]
-    rightpatch = img[0:colimg.shape[0],colimg.shape[1]-colimg.shape[0]-deloverlap:colimg.shape[1]-deloverlap]
+    leftpatch = colimg[0:colimg.shape[0],0:colimg.shape[0]]
+    rightpatch = colimg[0+rho:colimg.shape[0]-rho,colimg.shape[1]-colimg.shape[0]-deloverlap+rho:colimg.shape[1]-deloverlap-rho]
 
     ## Actual Points For Right Image
-    topleft = (colimg.shape[1]-colimg.shape[0]-deloverlap,0)                    # Yellow
-    bottomleft = (colimg.shape[1]-colimg.shape[0]-deloverlap,colimg.shape[0])   # Orange
-    bottomright = (colimg.shape[1]-deloverlap,colimg.shape[0])                  #LightBlue
-    topright = (colimg.shape[1]-deloverlap,0)                                   #Purple
+    topleft = (colimg.shape[1]-colimg.shape[0]-deloverlap+rho,0+rho)                    # Yellow
+    bottomleft = (colimg.shape[1]-colimg.shape[0]-deloverlap+rho,colimg.shape[0]-rho)   # Orange
+    bottomright = (colimg.shape[1]-deloverlap-rho,colimg.shape[0]-rho)                  #LightBlue
+    topright = (colimg.shape[1]-deloverlap-rho,0+rho)                                   #Purple
 
     actual_points = [topleft,bottomleft,bottomright,topright]
 
+    ap = actual_points.copy()
+
+
+    ## Perturbed Points For Perspective
     perturbedpoints = []
     for point in actual_points:
         perturbedpoints.append((point[0] + randint(-rho, rho), point[1] + randint(-rho, rho)))
 
-
+    pp = perturbedpoints.copy()
     perturbedpoints = np.float32(perturbedpoints)
     actual_points = np.float32(actual_points)
 
+
+    # Perspective and Warping
     HTrain = cv2.getPerspectiveTransform(actual_points,perturbedpoints)
     HTraininv = inv(HTrain)
     #print('H = ',HTrain)
-
     warpedimage = cv2.warpPerspective(colimg,HTraininv,(800,800))
 
-    warpedpatchright = warpedimage[0:colimg.shape[0],colimg.shape[1]-colimg.shape[0]-deloverlap:colimg.shape[1]-deloverlap]
+    rightpatchwarped = warpedimage[0+rho:colimg.shape[0]-rho,colimg.shape[1]-colimg.shape[0]-deloverlap+rho:colimg.shape[1]-deloverlap-rho]
+
     if(datavis == 1):
         
         cv2.rectangle(colimg,(0,0),(colimg.shape[0],colimg.shape[0]),(0,255,0),2)
-        cv2.rectangle(colimg,(colimg.shape[1]-colimg.shape[0]-deloverlap,0),(colimg.shape[1]-deloverlap,colimg.shape[0]),(0,0,255),2)
+        cv2.rectangle(colimg,(colimg.shape[1]-colimg.shape[0]-deloverlap+rho,0+rho),(colimg.shape[1]-deloverlap-rho,colimg.shape[0]-rho),(0,0,255),2)
         cv2.circle(colimg,topleft, 10, (255,255,0), -1)
         cv2.circle(colimg,bottomleft,10,(255,128,0), -1)
         cv2.circle(colimg,bottomright,10,(0,255,128),-1)
         cv2.circle(colimg,topright,10,(102,0,102),-1)
 
+        ap = np.array(ap)
+        ap = ap.reshape((1,4,2))
+        
         print("Perturbed Points = ",perturbedpoints)
         print("H = ",HTraininv)
-        #show(kpis)
+
         show(colimg)
         show(leftpatch)
         #show(rightpatch)
-        #show(warpedpatchright)
-        show(warpedimage)
+        #show(rightpatchwarped)
+        show(cv2.polylines(warpedimage,ap,1,(102,0,102),3))
         plt.subplot(1,2,1)
         plt.imshow(rightpatch)
         plt.subplot(1,2,2)
-        plt.imshow(warpedpatchright)
+        plt.imshow(rightpatchwarped)
         plt.show()
 
-    continue
-    x = randint(rho,x_l-rho-patchsize)
-    y = randint(rho,h-rho-patchsize-newpointdel)
-    cv2.rectangle(colimg,(rho,rho),(x_l-rho-patchsize,h-rho-patchsize),(0,255,255),2)
+    ## Converting Patches to GrayScale
+    leftpatch = cv2.cvtColor(leftpatch,cv2.COLOR_RGB2GRAY)
+    rightpatchwarped = cv2.cvtColor(rightpatchwarped,cv2.COLOR_RGB2GRAY)
 
+    if(datavis == 1):
+        plt.subplot(1,2,1)
+        plt.imshow(leftpatch)
+        plt.subplot(1,2,2)
+        plt.imshow(rightpatchwarped)
+        plt.show()
 
-    upleft = (x,y)
-    botleft = (x,y+patchsize)
-    botright = (x+patchsize,y+patchsize)
-    upright = (x+patchsize,y)
+    ## to 128 bit patches
 
-    points = [upleft,botleft,botright,upright]
+    leftpatch = cv2.resize(leftpatch,(128,128))
+    rightpatchwarped = cv2.resize(rightpatchwarped,(128,128))
 
-    perturbedpoints = []
-    for point in points:
-        perturbedpoints.append((point[0] + randint(-rho, rho), point[1] + randint(-rho, rho)))
+    if(datavis == 1):
+        plt.subplot(1,2,1)
+        plt.imshow(leftpatch)
+        plt.subplot(1,2,2)
+        plt.imshow(rightpatchwarped)
+        plt.show()
 
-    perturbedpoints_arr = np.array(perturbedpoints)  # For Shape 8
+    ##
+    actual_points_arr = np.array(actual_points)
+    perturbedpoints_arr = np.array(perturbedpoints)
 
-    newx = x + randint(1,newpointdel)
-    newy = y + randint(1,newpointdel)
-
-    newupleft = (newx,newy)
-    newbotleft = (newx,newy+patchsize)
-    newbotright = (newx+patchsize,newy+patchsize)
-    newupright = (newx+patchsize,newy)
-
-    newpoints = [newupleft,newbotleft,newbotright,newupright]
-    newpoints_arr = np.array(newpoints)
-
-    ## Drawing
-    points = np.array(points)
-    points = points.reshape((1,4,2))
-    colimg = cv2.polylines(colimg,points,1,(0,0,255),2)
-
-    perturbedpoints = np.array(perturbedpoints)
-    perturbedpoints = perturbedpoints.reshape((1,4,2))
-    colimg = cv2.polylines(colimg,perturbedpoints,1,(255,0,0),2)
-
-    newpoints = np.array(newpoints)
-    newpoints = newpoints.reshape((1,4,2))
-    colimg = cv2.polylines(colimg,newpoints,1,(255,0,255),2)
-
-    perturbedpoints = np.float32(perturbedpoints)
-    newpoints = np.float32(newpoints)
-
-    HTrain = cv2.getPerspectiveTransform(newpoints,perturbedpoints)
-    HTraininv = inv(HTrain)
-    #print('H = ',HTrain)
-
-    warpedimage  = cv2.warpPerspective(colimg,HTraininv,(w,h))
-
-    original_patch = colimg[newy:newy + patchsize, newx:newx + patchsize]
-    warped_patch = warpedimage[newy:newy + patchsize, newx:newx + patchsize]
-
-    oggraypatch = cv2.cvtColor(original_patch,cv2.COLOR_RGB2GRAY)
-    warpedgraypatch = cv2.cvtColor(warped_patch,cv2.COLOR_RGB2GRAY)
-
-    trainingimage = np.dstack((oggraypatch,warpedgraypatch))
-    H_four_points = np.subtract(perturbedpoints_arr, newpoints_arr)
-
+    trainingimage = np.dstack((leftpatch,rightpatchwarped))
+    H_four_points = np.subtract(perturbedpoints_arr, actual_points_arr)
+    
     X[i,:,:,:] = trainingimage
     Y[i,:] = H_four_points.reshape(-1)
     
     print('Progress :[%f%%] \r'%(i/100),end="")
-    
-    """ subplot(2,2,1)
-    plt.imshow(colimg)
-    subplot(2,2,2)
-    plt.imshow(warpedimage)
-    subplot(2,2,3)
-    plt.imshow(original_patch)
-    subplot(2,2,4)
-    plt.imshow(warped_patch)
-    plt.show() """
 
 print("Saving in pickle format.")
 X_train = X[0:int(0.9 *datalen)]

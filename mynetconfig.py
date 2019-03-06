@@ -6,12 +6,12 @@ rawpdatapath = "../../../Downloads/train2014/*.jpg"
 
 ## Data Visualization
 
-datavis = 1
+datavis = 0
 
 
 ## Overlap Displacement Range
 
-lapdisp = 50
+lapdisp = 20
 
 ## Image ReSizing Parameters
 w= 540
@@ -19,7 +19,7 @@ h= 720
 
 x_l     = 200
 
-rho = 100
+rho = 50
 patchsize =128
 
 newpointdel = 30
