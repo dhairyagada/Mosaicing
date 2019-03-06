@@ -61,8 +61,8 @@ def homography_regression_model():
     return model
 
 def train_network():
-    train_file = 'train2.p'
-    valid_file = 'valid2.p'
+    train_file = 'train_new.p'
+    valid_file = 'valid_new.p'
 
     with open(train_file, mode='rb') as f:
         train = pickle.load(f)
@@ -123,6 +123,6 @@ def HPrediction():
         cv2.destroyAllWindows()
 
     return
-#train_network()
-HPrediction()
+train_network()
+#HPrediction()
 

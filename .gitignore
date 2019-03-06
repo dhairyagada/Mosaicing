@@ -112,3 +112,5 @@ NetWeights.h5
 train2.p
 valid2.p
 CycleImage12H.txt
+train_new.p
+valid_new.p

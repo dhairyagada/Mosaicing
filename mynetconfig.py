@@ -14,8 +14,8 @@ datavis = 0
 lapdisp = 20
 
 ## Image ReSizing Parameters
-w= 540
-h= 720
+w= 360
+h= 480
 
 x_l     = 200
 

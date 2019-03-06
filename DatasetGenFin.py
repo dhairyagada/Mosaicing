@@ -27,7 +27,7 @@ for i in range(datalen):
         index = randint(0,numrawimages-1)
         colimgloc = loc_list[index]
         colimg = cv2.imread(colimgloc)
-        print(colimg.shape[0:2])
+        #print(colimg.shape[0:2])
         if(1.9*colimg.shape[0]>colimg.shape[1] & colimg.shape[1] > 1.5*colimg.shape[0]-1 ):  
             break  
     
@@ -135,8 +135,8 @@ Y_train = Y[0:int(0.9 *datalen)]
 Y_valid = Y[int(0.9 *datalen):]
 train = {'features': X_train, 'labels': Y_train}
 valid = {'features': X_valid, 'labels': Y_valid}
-pickle.dump(train, open("./train2.p", "wb"))
-pickle.dump(valid, open("./valid2.p", "wb"))
+pickle.dump(train, open("./train_new.p", "wb"))
+pickle.dump(valid, open("./valid_new.p", "wb"))
 print("Done.")
 
 k =cv2.waitKey(0)
