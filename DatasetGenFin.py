@@ -21,13 +21,70 @@ X = np.zeros((datalen, 128, 128, 2))  # images
 Y = np.zeros((datalen,8))
 
 for i in range(datalen):
-    index = randint(0,numrawimages-1)
-
-    colimgloc = loc_list[index]
-    colimg = cv2.imread(colimgloc)
-    colimg = cv2.resize(colimg,(w,h))
+    
+    # Only For Selecting Landscape Images!
+    while True:  
+        index = randint(0,numrawimages-1)
+        colimgloc = loc_list[index]
+        colimg = cv2.imread(colimgloc)
+        print(colimg.shape[0:2])
+        if(colimg.shape[1] > 1.5*colimg.shape[0]-1):  
+            break  
+    
+    
     img = cv2.cvtColor(colimg,cv2.COLOR_RGB2GRAY)
+    deloverlap = randint(0,lapdisp)
 
+    leftpatch = img[0:colimg.shape[0],0:colimg.shape[0]]
+    rightpatch = img[0:colimg.shape[0],colimg.shape[1]-colimg.shape[0]-deloverlap:colimg.shape[1]-deloverlap]
+
+    ## Actual Points For Right Image
+    topleft = (colimg.shape[1]-colimg.shape[0]-deloverlap,0)                    # Yellow
+    bottomleft = (colimg.shape[1]-colimg.shape[0]-deloverlap,colimg.shape[0])   # Orange
+    bottomright = (colimg.shape[1]-deloverlap,colimg.shape[0])                  #LightBlue
+    topright = (colimg.shape[1]-deloverlap,0)                                   #Purple
+
+    actual_points = [topleft,bottomleft,bottomright,topright]
+
+    perturbedpoints = []
+    for point in actual_points:
+        perturbedpoints.append((point[0] + randint(-rho, rho), point[1] + randint(-rho, rho)))
+
+
+    perturbedpoints = np.float32(perturbedpoints)
+    actual_points = np.float32(actual_points)
+
+    HTrain = cv2.getPerspectiveTransform(actual_points,perturbedpoints)
+    HTraininv = inv(HTrain)
+    #print('H = ',HTrain)
+
+    warpedimage = cv2.warpPerspective(colimg,HTraininv,(800,800))
+
+    warpedpatchright = warpedimage[0:colimg.shape[0],colimg.shape[1]-colimg.shape[0]-deloverlap:colimg.shape[1]-deloverlap]
+    if(datavis == 1):
+        
+        cv2.rectangle(colimg,(0,0),(colimg.shape[0],colimg.shape[0]),(0,255,0),2)
+        cv2.rectangle(colimg,(colimg.shape[1]-colimg.shape[0]-deloverlap,0),(colimg.shape[1]-deloverlap,colimg.shape[0]),(0,0,255),2)
+        cv2.circle(colimg,topleft, 10, (255,255,0), -1)
+        cv2.circle(colimg,bottomleft,10,(255,128,0), -1)
+        cv2.circle(colimg,bottomright,10,(0,255,128),-1)
+        cv2.circle(colimg,topright,10,(102,0,102),-1)
+
+        print("Perturbed Points = ",perturbedpoints)
+        print("H = ",HTraininv)
+        #show(kpis)
+        show(colimg)
+        show(leftpatch)
+        #show(rightpatch)
+        #show(warpedpatchright)
+        show(warpedimage)
+        plt.subplot(1,2,1)
+        plt.imshow(rightpatch)
+        plt.subplot(1,2,2)
+        plt.imshow(warpedpatchright)
+        plt.show()
+
+    continue
     x = randint(rho,x_l-rho-patchsize)
     y = randint(rho,h-rho-patchsize-newpointdel)
     cv2.rectangle(colimg,(rho,rho),(x_l-rho-patchsize,h-rho-patchsize),(0,255,255),2)
