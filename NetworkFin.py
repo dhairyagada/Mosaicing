@@ -61,8 +61,8 @@ def homography_regression_model():
     return model
 
 def train_network():
-    train_file = 'train.p'
-    valid_file = 'valid.p'
+    train_file = 'train2.p'
+    valid_file = 'valid2.p'
 
     with open(train_file, mode='rb') as f:
         train = pickle.load(f)
@@ -77,7 +77,7 @@ def train_network():
     K.clear_session()
     model = homography_regression_model()
     model.load_weights('NetWeights.h5')
-    h = model.fit(x=X_train, y=y_train, verbose=1, batch_size=10, nb_epoch=1, validation_split=0.3)
+    h = model.fit(x=X_train, y=y_train, verbose=1, batch_size=20, nb_epoch=2, validation_split=0.3)
     model.save_weights('NetWeights.h5')
     K.clear_session()
     model = homography_regression_model()
@@ -89,8 +89,8 @@ def train_network():
 
 def HPrediction():
     print("Input Test Started")
-    pathA = './ImageProc/InputImages/test1.jpg'
-    pathB = './ImageProc/InputImages/test2.jpg'
+    pathA = './ImageProc/InputImages/cycle1.jpeg'
+    pathB = './ImageProc/InputImages/cycle2.jpeg'
 
     inputPatches,points = GetInputPatches(pathA,pathB)
     print(inputPatches.shape)
@@ -115,13 +115,14 @@ def HPrediction():
     imgBcol = cv2.resize(imgB,(w,h))
 
     warpedimg,finalimg = WarpAndStitch(imgACol,imgBcol,Hdash)
-    finimg = mix_and_match(imgACol,warpedimg)
+    #finimg = mix_and_match(imgACol,warpedimg)
     cv2.imshow("Warped2",warpedimg)
-    cv2.imshow("Final",finimg)
+    cv2.imshow("Final",finalimg)
     k = cv2.waitKey(0)
     if k == 27:         # wait for ESC key to exit
         cv2.destroyAllWindows()
 
     return
-
+#train_network()
 HPrediction()
+

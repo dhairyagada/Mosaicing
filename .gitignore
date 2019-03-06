@@ -109,3 +109,6 @@ NeuralNet/my_model_weights.h5
 train.p
 valid.p
 NetWeights.h5
+train2.p
+valid2.p
+CycleImage12H.txt

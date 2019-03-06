@@ -36,28 +36,28 @@ def GetInputPatches(pA,pB):
 
     points = np.array(points)
     points = points.reshape((1,4,2))
-    """ A = cv2.polylines(A,points,1,(0,0,255),2)
+    A = cv2.polylines(A,points,1,(0,0,255),2)
     B = cv2.polylines(B,points,1,(0,0,255),2)
     plt.subplot(1,2,1)
     plt.imshow(A)
     plt.subplot(1,2,2)
     plt.imshow(B)
-    plt.show() """
+    plt.show()
 
     imgPatchA = A[yright:yright+patchsize,xright:xright+patchsize]
     imgPatchB = B[yright:yright+patchsize,xright:xright+patchsize]
 
     inputPatches = np.dstack((imgPatchA,imgPatchB))
     inputPatches = inputPatches.reshape((1,128,128,2))
-    """ plt.subplot(1,2,1)
+    plt.subplot(1,2,1)
     plt.imshow(imgPatchA)
     plt.subplot(1,2,2)
     plt.imshow(imgPatchB)
-    plt.show() """
+    plt.show()
     return inputPatches,points
 
-pathA = './ImageProc/InputImages/test1.jpg'
-pathB = './ImageProc/InputImages/test2.jpg'
+#pathA = './ImageProc/InputImages/test1.jpg'
+#pathB = './ImageProc/InputImages/test2.jpg'
 
-inputPatches,points = GetInputPatches(pathA,pathB)
-print(inputPatches.shape)
+#inputPatches,points = GetInputPatches(pathA,pathB)
+#print(inputPatches.shape)

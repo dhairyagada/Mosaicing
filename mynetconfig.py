@@ -2,7 +2,7 @@
 
 ## Path 
 
-rawpdatapath = "./NeuralNet/SampleTestSet/*.jpg"
+rawpdatapath = "../../../Downloads/train2014/*.jpg"
 
 ## Image ReSizing Parameters
 w= 540
@@ -13,11 +13,11 @@ x_l     = 200
 rho = 32
 patchsize =128
 
-newpointdel = 25
+newpointdel = 30
 
-datalen = 100            ## Number of iterations
+datalen = 10000            ## Number of iterations
 
-numrawimages = 10       ## Number of Images in Raw Data Set
+numrawimages = 80000       ## Number of Images in Raw Data Set
 
 topbottomcrop = 36
-sidecrop = 180
+sidecrop = 300

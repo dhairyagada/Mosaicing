@@ -86,6 +86,7 @@ for i in range(datalen):
     X[i,:,:,:] = trainingimage
     Y[i,:] = H_four_points.reshape(-1)
     
+    print('Progress :[%f%%] \r'%(i/100),end="")
     
     """ subplot(2,2,1)
     plt.imshow(colimg)
@@ -104,8 +105,8 @@ Y_train = Y[0:int(0.9 *datalen)]
 Y_valid = Y[int(0.9 *datalen):]
 train = {'features': X_train, 'labels': Y_train}
 valid = {'features': X_valid, 'labels': Y_valid}
-pickle.dump(train, open("./train.p", "wb"))
-pickle.dump(valid, open("./valid.p", "wb"))
+pickle.dump(train, open("./train2.p", "wb"))
+pickle.dump(valid, open("./valid2.p", "wb"))
 print("Done.")
 
 k =cv2.waitKey(0)
