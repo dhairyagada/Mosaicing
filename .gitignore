@@ -114,3 +114,4 @@ valid2.p
 CycleImage12H.txt
 train_new.p
 valid_new.p
+AlexNetWeights.h5

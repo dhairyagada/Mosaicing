@@ -56,7 +56,18 @@ cv2.imshow("Stitched 2 and 3",  StitchedImage2)
 #cv2.imshow("Warped 3 ",WarpedImage3)
 #cv2.imshow("Warped Image",WarpedImage)
 cv2.imshow("Stitched Image",FinalStitch)
-cv2.imwrite('OutputImages/homeimagestitchnopre.jpeg',FinalStitch)
+
+
+
+cv2.imwrite('keypt1.jpeg',kpImageLeft1)
+cv2.imwrite('keypt2.jpeg',kpImageLeft2)
+cv2.imwrite('keypt3.jpeg',kpImageRight2)
+
+cv2.imwrite('match1.jpeg',match_img1)
+cv2.imwrite('match2.jpeg',match_img2)
+cv2.imwrite('Stitch1.jpeg',StitchedImage1)
+cv2.imwrite('Stitch2.jpeg',StitchedImage2)
+cv2.imwrite('Mosaic.jpeg',FinalStitch)
 
 k = cv2.waitKey(0)
 if k == 27:         # wait for ESC key to exit

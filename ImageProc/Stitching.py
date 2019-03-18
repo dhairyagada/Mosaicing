@@ -19,7 +19,7 @@ def WarpAndStitch(imageLeft,imageRight,Hom):
     """ txyz = np.dot(Hom, np.array([imageRight.shape[1], imageRight.shape[0], 1]))
     txyz = txyz/txyz[-1]
     dsize = (int(txyz[0])+imageLeft.shape[1], int(txyz[1])+imageLeft.shape[0]) """
-    dsize = (1800,1200)
+    dsize = (1000,800)
     Warped_Img = cv2.warpPerspective(imageRight, Hom, dsize)
     
     FinalImage = Warped_Img.copy()

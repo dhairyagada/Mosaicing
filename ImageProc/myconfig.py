@@ -10,7 +10,7 @@ h=480
 
 ## Pre-Processing Parameters
 
-ifProc = 1
+ifProc = 0
 
 # Downsampling
 downsample_level=1
