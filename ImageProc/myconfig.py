@@ -40,3 +40,8 @@ xw_r    = 160
 
 y_r     = 0
 yw_r    = 480
+
+
+## Cylindrical Warping
+
+focal_len = 700

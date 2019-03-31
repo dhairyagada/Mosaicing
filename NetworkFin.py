@@ -29,32 +29,39 @@ def homography_regression_model():
     input_shape=(128, 128, 2)
     input_img = Input(shape=input_shape)
      
-    x = Conv2D(64, 3, 3, subsample=(1, 1), border_mode='same', name='conv1', activation='relu')(input_img)
-    x = Conv2D(64, 3, 3, subsample=(1, 1), border_mode='same', name='conv2', activation='relu')(x)
+    x = Conv2D(64, (3, 3), padding="same", strides=(1, 1), activation="relu", name="conv1")(input_img)
+    x = Conv2D(64, (3, 3), padding="same", strides=(1, 1), activation="relu", name="conv2")(x)
+    x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='pool1')(x)
     
-    x = Conv2D(64, 3, 3, subsample=(1, 1), border_mode='same', name='conv3', activation='relu')(x)
-    x = Conv2D(64, 3, 3, subsample=(1, 1), border_mode='same', name='conv4', activation='relu')(x)
+    x = Conv2D(64, (3, 3), padding="same", strides=(1, 1), activation="relu", name="conv3")(x)
+    x = Conv2D(64, (3, 3), padding="same", strides=(1, 1), activation="relu", name="conv4")(x)
+    x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='pool2')(x)
    
-    x = Conv2D(128, 3, 3, subsample=(1, 1), border_mode='same', name='conv5', activation='relu')(x)
-    x = Conv2D(128, 3, 3, subsample=(1, 1), border_mode='same', name='conv6', activation='relu')(x)
+    x = Conv2D(128, (3, 3), padding="same", strides=(1, 1), activation="relu", name="conv5")(x)
+    x = Conv2D(128, (3, 3), padding="same", strides=(1, 1), activation="relu", name="conv6")(x)
+    x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='pool3')(x)
     
-    x = Conv2D(128, 3, 3, subsample=(1, 1), border_mode='same', name='conv7', activation='relu')(x)
-    x = Conv2D(128, 3, 3, subsample=(1, 1), border_mode='same', name='conv8', activation='relu')(x)
+    x = Conv2D(128, (3, 3), padding="same", strides=(1, 1), activation="relu", name="conv7")(x)
+    x = Conv2D(128, (3, 3), padding="same", strides=(1, 1), activation="relu", name="conv8")(x)
+    x = BatchNormalization()(x)
     
     x = Flatten()(x)
+    x = Dropout(0.75, noise_shape=None, seed=None)(x)
     x = Dense(1024, name='FC1')(x)
     out = Dense(8, name='loss')(x)
     
-    model = Model(input=input_img, output=[out])    
-    model.compile(optimizer=Adam(lr=1e-3), loss=euclidean_distance)
+    model = Model(inputs=input_img, outputs=[out])
+    #plot_model(model, to_file='documentation_images/HomegraphyNet_Regression.png', show_shapes=True)
+    
+    model.compile(optimizer=Adam(lr=0.0015, beta_1=0.9, beta_2=0.999, epsilon=1e-08), loss=euclidean_distance)
     return model
 
 def train_network():
-    train_file = 'train_new.p'
-    valid_file = 'valid_new.p'
+    train_file = 'train_des.p'
+    valid_file = 'valid_des.p'
 
     with open(train_file, mode='rb') as f:
         train = pickle.load(f)
@@ -68,14 +75,14 @@ def train_network():
 
     K.clear_session()
     model = homography_regression_model()
-    model.load_weights('AlexNetWeights.h5')
+    #model.load_weights('NetWeightsDesc.h5')
     h = model.fit(x=X_train, y=y_train, verbose=1, batch_size=100, nb_epoch=2, validation_split=0.2)
-    model.save_weights('AlexNetWeights.h5')
+    model.save_weights('NetWeightsDesc.h5')
     K.clear_session()
     model = homography_regression_model()
-    model.load_weights('AlexNetWeights.h5')
+    model.load_weights('NetWeightsDesc.h5')
     y_test=model.predict(X_valid)
-    print('Training Done , Weights Saved to AlexNetWeights.h5')
+    print('Training Done , Weights Saved to NetWeightsDesc.h5')
     return
 
 
@@ -88,7 +95,7 @@ def HPrediction():
     print(inputPatches.shape)
 
     model = homography_regression_model()
-    model.load_weights('AlexNetWeights.h5')
+    model.load_weights('NetWeightsDesc.h5')
     y_predicted=model.predict(inputPatches)
 
     K.clear_session()
@@ -115,6 +122,6 @@ def HPrediction():
         cv2.destroyAllWindows()
 
     return
-#train_network()
-HPrediction()
+train_network()
+#HPrediction()
 

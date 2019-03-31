@@ -115,3 +115,6 @@ CycleImage12H.txt
 train_new.p
 valid_new.p
 AlexNetWeights.h5
+NetWeightsDesc.h5
+train_des.p
+valid_des.p

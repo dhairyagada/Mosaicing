@@ -24,7 +24,7 @@ patchsize =128
 
 newpointdel = 30
 
-datalen = 10000            ## Number of iterations
+datalen = 10000          ## Number of iterations
 
 numrawimages = 80000       ## Number of Images in Raw Data Set
 

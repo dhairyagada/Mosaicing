@@ -1,14 +1,15 @@
 from myconfig import *
 import numpy as np
 import cv2
+from matplotlib import pyplot as plt
 
-def inputImages(A,B,C):
-    imgA = cv2.imread(A)
-    imgB = cv2.imread(B)
-    imgC = cv2.imread(C)
-    return imgA,imgB,imgC
-def cylindricalWarp(img, K):
+
+def cylindricalWarp(img):
     """This function returns the cylindrical warp for a given image and intrinsics matrix K"""
+    f = focal_len
+    h,w = img.shape[:2]
+    K = np.array([[f, 0, w/2], [0, f, h/2], [0, 0, 1]]) # mock calibration matrix
+
     h_,w_ = img.shape[:2]
     # pixel coordinates
     y_i, x_i = np.indices((h_,w_))
@@ -26,17 +27,33 @@ def cylindricalWarp(img, K):
     
     img_rgba = cv2.cvtColor(img,cv2.COLOR_BGR2BGRA) # for transparent borders...
     # warp the image according to cylindrical coords
-    return cv2.remap(img_rgba, B[:,:,0].astype(np.float32), B[:,:,1].astype(np.float32), cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+    cylimg = cv2.cvtColor(cv2.remap(img_rgba, B[:,:,0].astype(np.float32), B[:,:,1].astype(np.float32), cv2.INTER_AREA),cv2.COLOR_BGRA2BGR)
 
-imgA,imgB,imgC = inputImages(img1,img2,img3)
-imgA = cv2.resize(imgA,(360,480))
-f = 800
-h,w = imgA.shape[:2]
-K = np.array([[f, 0, w/2], [0, f, h/2], [0, 0, 1]]) # mock calibration matrix
+    count1 = 0
+    i = cylimg.shape[1] -1
+    
+    count0 = 0
+    j = cylimg.shape[0] -1
 
-imcyl = cylindricalWarp(imgA, K)
-cv2.imshow("Cylinder",imcyl)
+    while ((cylimg[int((cylimg.shape[0])/2),i] == [0,0,0]).all()):
+        count1 = count1 +1
+        i = i - 1
 
-k = cv2.waitKey(0)
-if k == 27:         # wait for ESC key to exit
-    cv2.destroyAllWindows()
+    
+    cylimg = cylimg[:cylimg.shape[0],count1:cylimg.shape[1]-count1]
+
+    while ((cylimg[j,cylimg.shape[1]-1] == [0,0,0]).all()):
+        count0 = count0 +1
+        j = j - 1
+    
+    cylimg = cylimg[count0:cylimg.shape[0]-count0,:cylimg.shape[1]]
+    return cylimg
+
+""" 
+def show(im):
+    plt.plot()
+    plt.imshow(im)
+    plt.show()
+    return
+
+show(cylindricalWarp(cv2.imread(img1))) """
