@@ -54,10 +54,10 @@ FinalStitch = mix_and_match(StitchedImage1,WarpedImage3)
 
 end_time = time.time()
 print("----%s seconds"%(end_time-start_time))
-cv2.imshow("Match 1",match_img1)
+""" cv2.imshow("Match 1",match_img1)
 cv2.imshow("Match 2",match_img2)
 cv2.imshow("Stitched 1 and 2",  StitchedImage1)
-cv2.imshow("Stitched 2 and 3",  StitchedImage2)
+cv2.imshow("Stitched 2 and 3",  StitchedImage2) """
 #cv2.imshow("Warped 3 ",WarpedImage3)
 #cv2.imshow("Warped Image",WarpedImage)
 cv2.imshow("Stitched Image",FinalStitch)
@@ -73,6 +73,22 @@ cv2.imwrite('match2.jpeg',match_img2)
 cv2.imwrite('Stitch1.jpeg',StitchedImage1)
 cv2.imwrite('Stitch2.jpeg',StitchedImage2)
 cv2.imwrite('Mosaic.jpeg',FinalStitch)
+
+#PFin = cv2.GaussianBlur(FinalStitch,(15,15),0)
+#PFin  = Hist_Eq(FinalStitch,2)
+#cv2.imshow('PFin',dst)
+""" 
+grayFin = cv2.cvtColor(FinalStitch,cv2.COLOR_BGR2GRAY)
+thresh = cv2.Canny(grayFin,1,255)
+cv2.imshow('thresh',thresh)
+cnts = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+cnt = cnts[0]
+xb,yb,wb,hb = cv2.boundingRect(cnt)
+cv2.imshow('cnt',cnt) """
+
+
+
+
 
 k = cv2.waitKey(0)
 if k == 27:         # wait for ESC key to exit
