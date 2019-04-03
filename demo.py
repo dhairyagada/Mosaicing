@@ -5,8 +5,16 @@ from util import *
 import cv2
 import numpy as np
 from time import sleep
+from ImageProc.cylinderwarp import *
+from myconfig import *
 # designate image path here
 #plt.ion()
+
+def show(imgX):
+    plt.plot()
+    plt.imshow(cv2.cvtColor(imgX, cv2.COLOR_BGR2RGB))
+    plt.show()
+    return
 
 climit = 2
 def iscollinear(x1, y1, x2, y2, x3, y3): 
@@ -31,22 +39,28 @@ def Hist_Eq(imgT,climit):
     G = cv2.cvtColor(merged_channels, cv2.COLOR_LAB2BGR)
     return G
 
-IX_path = './ImageProc/InputImages/cycle1.jpeg'
-IY_path = './ImageProc/InputImages/cycle2.jpeg'
+#IX_path = './ImageProc/InputImages/clg1.jpg'
+#IY_path = './ImageProc/InputImages/clg2.jpg'
 
-IX = cv2.imread(IX_path)
-IY = cv2.imread(IY_path)
+IX = cv2.imread(img1)
+IY = cv2.imread(img2)
 
-IX = cv2.resize(IX,(600,600))
-IY = cv2.resize(IY,(600,600))
+IX = cv2.resize(IX,(w,h))
+IY = cv2.resize(IY,(w,h))
 
+matches = np.zeros((IX.shape[0],IX.shape[1]*2,3))
+
+matches[:IX.shape[0],:IX.shape[1]] = IX
+matches[:IX.shape[0],IX.shape[1]:IX.shape[1]*2] = IY 
+#show(matches)
+cv2.imwrite('matches-net.jpeg',matches)
 IX1 = Hist_Eq(IX,climit)
 IY1 = Hist_Eq(IY,climit)
 
 #initialize
 reg = Registration.CNN()
 #register
-X, Y, Z, Pr = reg.register(IX1, IY1)
+X, Y, Z = reg.register(IX1, IY1)
 
 Xdash = X.copy()
 Ydash = Y.copy()
@@ -62,15 +76,21 @@ for j in range(len(X)):
     Zdash[j,0] = Z[j,1]
 
 for i in range(len(X)):
-    cv2.circle(IX,(int(X[i,1]),int(X[i,0])),3, (0,255,0), -1)
-    cv2.circle(IY,(int(Y[i,1]),int(Y[i,0])),3, (0,255,0), -1 )
+    cv2.circle(IX,(int(X[i,1]),int(X[i,0])),8, (0,0,255), 6)
+    cv2.circle(IY,(int(Y[i,1]),int(Y[i,0])),8, (0,0,255), 6)
+
+    cv2.circle(matches,(int(X[i,1]),int(X[i,0])),8, (0,0,255), 6)
+    cv2.circle(matches,(int(Y[i,1])+IX.shape[1],int(Y[i,0])),8, (0,0,255), 6)
+
+    cv2.line(matches,(int(X[i,1]),int(X[i,0])),(int(Y[i,1])+IX.shape[1],int(Y[i,0])),(0,255,255),5)
     """ plt.subplot(1,2,1)
     plt.imshow(cv2.cvtColor(IX, cv2.COLOR_BGR2RGB))
     plt.subplot(1,2,2)
     plt.imshow(cv2.cvtColor(IY, cv2.COLOR_BGR2RGB))
     plt.show() """
-
-points1 = np.float32(Xdash).reshape(-1,1,2)
+cv2.imshow('matches',matches)
+cv2.imwrite('matches-net1.jpeg',matches)
+points1 = np.float32(Zdash).reshape(-1,1,2)
 points2 = np.float32(Ydash).reshape(-1,1,2)
 
 c = 2
@@ -177,8 +197,8 @@ cv2.circle(IY,(int(Dy[0]),int(Dy[1])),3, (0,0,255), -1)
 
 #Hom = cv2.getPerspectiveTransform(points2,points1)
 
-Hom, mask = cv2.findHomography(points2[:50], points1[:50], cv2.RANSAC)
-Warped_Img = cv2.warpPerspective(IY, Hom, (800,800))
+Hom, mask = cv2.findHomography(points2, points1, cv2.RANSAC)
+Warped_Img = cv2.warpPerspective(IY, Hom, (600,600))
 
 FinalImage = Warped_Img.copy()
 FinalImage[0:IX.shape[0], 0:IX.shape[1]] = IX
@@ -199,4 +219,17 @@ plt.plot()
 plt.imshow(cv2.cvtColor(FinalImage, cv2.COLOR_BGR2RGB))
 plt.show()
 
+cv2.imshow('matches',matches)
+
 cv2.imwrite('final.jpeg',FinalImage)
+
+cv2.imwrite('Keypoint-Net23.jpeg',IX)
+cv2.imwrite('Keypoint-Net3.jpeg',IY)
+
+
+
+print("Hello")
+
+k = cv2.waitKey(0)
+if k == 27:         # wait for ESC key to exit
+    cv2.destroyAllWindows()

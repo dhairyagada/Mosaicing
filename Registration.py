@@ -90,6 +90,7 @@ class CNN(object):
         X = (X - 112.0) / 224.0
         Y = (Y - 112.0) / 224.0
 
+        #return ((X*224.0)+112.0)*Xscale, ((Y*224.0)+112.0)*Yscale, ((X*224.0)+112.0)*Xscale 
         # prematch and select points
         C_all, quality = match(PD)
         tau_max = np.max(quality)
@@ -100,6 +101,7 @@ class CNN(object):
 
         # select prematched feature points
         X, Y = X[C[:, 1]], Y[C[:, 0]]
+        return ((X*224.0)+112.0)*Xscale, ((Y*224.0)+112.0)*Yscale, ((X*224.0)+112.0)*Xscale 
         PD = PD[np.repeat(np.reshape(C[:, 1], [cnt, 1]), cnt, axis=1),
                 np.repeat(np.reshape(C[:, 0], [1, cnt]), cnt, axis=0)]
 
@@ -110,7 +112,7 @@ class CNN(object):
         # precalculation of feature match
         C_all, quality = match(PD)
 
-        # compute \hat{\theta} and \delta
+        # compute \hat{theta} and \delta
         tau_min = np.min(quality)
         tau_max = np.max(quality)
         while np.where(quality >= tau_max)[0].shape[0] <= 0.5 * cnt: tau_max -= 0.01
@@ -138,7 +140,7 @@ class CNN(object):
 
             # for every k iterations
             if (itr - 1) % freq == 0:
-                # compute C^{conv}_{\theta}
+                # compute C^{conv}_{theta}
                 C = C_all[np.where(quality >= tau)]
                 Lt = PD[C[:, 0], C[:, 1]]
                 maxLt = np.max(Lt)
@@ -146,7 +148,7 @@ class CNN(object):
                 L = np.ones([M, N])
                 L[C[:, 0], C[:, 1]] = Lt
 
-                # compute C^{geo}_{\theta}
+                # compute C^{geo}_{theta}
                 SCZ = self.SC.compute(Z)
                 SC_cost = self.SC.cost(SCZ, SCX)
 
@@ -185,4 +187,4 @@ class CNN(object):
             itr = itr + 1
 
         print('finish: itr %d, Q %d, tau %d' % (itr, Q, tau))
-        return ((X*224.0)+112.0)*Xscale, ((Y*224.0)+112.0)*Yscale, ((Z*224.0)+112.0)*Xscale, Pr
+        return ((X*224.0)+112.0)*Xscale, ((Y*224.0)+112.0)*Yscale, ((Z*224.0)+112.0)*Xscale
