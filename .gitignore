@@ -118,3 +118,13 @@ AlexNetWeights.h5
 NetWeightsDesc.h5
 train_des.p
 valid_des.p
+
+*.jpeg
+/ImageProc/InputImages/*.jpg
+Mosaic.jpeg
+Stitch1.jpeg
+Stitch2.jpeg
+final.jpeg
+keypt1.jpeg
+keypt2.jpeg
+keypt3.jpeg

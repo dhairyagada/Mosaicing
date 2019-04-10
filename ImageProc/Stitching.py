@@ -38,8 +38,8 @@ def ImageStitcher(imageLeft,imageRight,kpl,kpr,good):
 def mix_and_match(leftImage, rightImage):
    
     MixImage = leftImage.copy()
-    #MixImage = cv2.addWeighted(leftImage,0.7,rightImage,0.3,0)
-    iLimit = leftImage.shape[0]
+    MixImage = cv2.addWeighted(leftImage,0.7,rightImage,0.3,0)
+    """ iLimit = leftImage.shape[0]
     jLimit = leftImage.shape[1]
 
     for i in range(0,iLimit-1):
@@ -50,6 +50,6 @@ def mix_and_match(leftImage, rightImage):
             elif (leftImage[i,j] != [0,0,0]).all() and (rightImage[i,j] == [0,0,0]).all():
                 MixImage[i,j] = leftImage[i,j]
             else:
-                MixImage[i,j] = leftImage[i,j]
+                MixImage[i,j] = leftImage[i,j] """
     
     return MixImage

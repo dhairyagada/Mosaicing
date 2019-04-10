@@ -1,4 +1,5 @@
 # Configurations
+rawdatapath = "./ImageProc/InputImages/a/*.jpg"
 
 ## Input Images
 img1='./ImageProc/InputImages/5f.jpg'
