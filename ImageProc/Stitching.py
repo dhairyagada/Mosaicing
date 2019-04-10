@@ -19,7 +19,7 @@ def WarpAndStitch(imageLeft,imageRight,Hom):
     """ txyz = np.dot(Hom, np.array([imageRight.shape[1], imageRight.shape[0], 1]))
     txyz = txyz/txyz[-1]
     dsize = (int(txyz[0])+imageLeft.shape[1], int(txyz[1])+imageLeft.shape[0]) """
-    dsize = (600,600)
+    dsize = (int(3*w),int(1.2*h))
     Warped_Img = cv2.warpPerspective(imageRight, Hom, dsize)
     
     FinalImage = Warped_Img.copy()
@@ -38,7 +38,7 @@ def ImageStitcher(imageLeft,imageRight,kpl,kpr,good):
 def mix_and_match(leftImage, rightImage):
    
     MixImage = leftImage.copy()
-    """ 
+    #MixImage = cv2.addWeighted(leftImage,0.7,rightImage,0.3,0)
     iLimit = leftImage.shape[0]
     jLimit = leftImage.shape[1]
 
@@ -50,6 +50,6 @@ def mix_and_match(leftImage, rightImage):
             elif (leftImage[i,j] != [0,0,0]).all() and (rightImage[i,j] == [0,0,0]).all():
                 MixImage[i,j] = leftImage[i,j]
             else:
-                MixImage[i,j] = leftImage[i,j] """
-    MixImage = cv2.addWeighted(leftImage,0.7,rightImage,0.3,0)
+                MixImage[i,j] = leftImage[i,j]
+    
     return MixImage

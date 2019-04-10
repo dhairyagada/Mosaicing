@@ -1,9 +1,9 @@
 # Configurations
 
 ## Input Images
-img1='./ImageProc/InputImages/cycle1.jpeg'
-img2='./ImageProc/InputImages/cycle2.jpeg'
-img3='./ImageProc/InputImages/cycle3.jpeg'
+img1='./ImageProc/InputImages/2c.jpg'
+img2='./ImageProc/InputImages/3c.jpg'
+img3='./ImageProc/InputImages/1c.jpg'
 ## Image ReSizing Parameters
 w=360
 h=480
@@ -21,7 +21,7 @@ gaussian_ksize=3
 
 ## Feature Matching Limit
 
-min_limit=0.6
+min_limit=0.7
 
 ## Region of Interest
 
@@ -44,4 +44,4 @@ yw_r    = 480
 
 ## Cylindrical Warping
 
-focal_len = 700
+focal_len = 3000

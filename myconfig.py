@@ -1,9 +1,11 @@
 # Configurations
 
 ## Input Images
-img1='./ImageProc/InputImages/clg1.jpg'
-img2='./ImageProc/InputImages/clg2.jpg'
-img3='./ImageProc/InputImages/clg3.jpg'
+img1='./ImageProc/InputImages/5f.jpg'
+img2='./ImageProc/InputImages/4f.jpg'
+img3='./ImageProc/InputImages/3f.jpg'
+img4='./ImageProc/InputImages/2f.jpg'
+img5='./ImageProc/InputImages/1f.jpg'
 ## Image ReSizing Parameters
 w=360
 h=480
