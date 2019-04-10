@@ -20,6 +20,7 @@ len_list = len(loc_list)
 def readimage(img):
     x = cv2.imread(img)
     x = cv2.resize(x,(w,h))
+    x = cylindricalWarp(x)
     return x
 def show(im):
     plt.plot()
@@ -27,28 +28,31 @@ def show(im):
     plt.show()
     return
 
-for j in range(len_list):
-    show(cv2.imread(loc_list[j]))
-A = readimage(loc_list[0])
-B = readimage(loc_list[1])
+""" for j in range(len_list):
+    show(cv2.imread(loc_list[j])) """
+interval = 20
+A = readimage('./ImageProc/InputImages/b/0.jpg')
+B = readimage('./ImageProc/InputImages/b/%d.jpg' %interval)
 KpX,KpY,matches,Hom,Warped_Img,StitchBase = NetRunHom(A,B)
 
 HomAcc = Hom.copy()
 StitchFin = StitchBase.copy()
-show(StitchFin)
-for i in range (1,len_list-1):
-    #print(i)
-    left = readimage(loc_list[i])
-    right = readimage(loc_list[i+1])
+cv2.imwrite("Stitchfin.jpg",StitchFin)
+#show(StitchFin)
+for i in range (interval,len_list-interval-1,interval):
+    print(i)
+    left = readimage('./ImageProc/InputImages/b/%d.jpg' %i)
+    right = readimage('./ImageProc/InputImages/b/%d.jpg' %(i+interval))
 
     KpXT,KpYT,matchesT,HomT,Warped_ImgT,StitchT = NetRunHom(left,right)
     HomAcc = np.matmul(HomAcc,HomT)
 
     WarpedImgT, StitchT = WarpAndStitch(A,right,HomAcc)
     StitchFin = mix_and_match(StitchFin,WarpedImgT)
-    show(left)
+    cv2.imwrite("Stitchfin.jpg",StitchFin)
+    """ show(left)
     show(right)
-    show(StitchFin)
+    show(StitchFin) """
 
 cv2.imshow('Stitch',StitchFin)
 k = cv2.waitKey(0)
